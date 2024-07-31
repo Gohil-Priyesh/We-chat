@@ -33,16 +33,16 @@ class _HomeState extends State<Home> {
     /// for updating user active status according to lifecycle events
     /// resume -> active or online
     /// pause ->  inactive or offline
-    SystemChannels.lifecycle.setMessageHandler((message){
-      MyApp.logger.i('Message $message');
-      /// this if condition is user because if the user logout of application then the active status will remain online so to prevent this issue we used this if condition
-      /// that if currentUser is null then don't execute this condition if it is != null then only execute this conditions
-      if(APIs.auth.currentUser != null){
-        if (message.toString().contains('resume'))APIs.updateActiveStatus(true);
-        if (message.toString().contains('pause'))APIs.updateActiveStatus(false);
-      }
-      return Future.value(message);
-    });
+    // SystemChannels.lifecycle.setMessageHandler((message){
+    //   MyApp.logger.i('Message $message');
+    //   /// this if condition is user because if the user logout of application then the active status will remain online so to prevent this issue we used this if condition
+    //   /// that if currentUser is null then don't execute this condition if it is != null then only execute this conditions
+    //   if(APIs.auth.currentUser != null){
+    //     if (message.toString().contains('resume'))APIs.updateActiveStatus(true);
+    //     if (message.toString().contains('pause'))APIs.updateActiveStatus(false);
+    //   }
+    //   return Future.value(message);
+    // });
 
   }
 
@@ -78,6 +78,7 @@ class _HomeState extends State<Home> {
               ),
               child: const Text('Leave'),
               onPressed: () {
+                /// used for exiting from the entire application
                 SystemNavigator.pop();
               },
             ),
