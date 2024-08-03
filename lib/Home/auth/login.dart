@@ -1,8 +1,6 @@
-import 'dart:io';
 // import 'dart:math';
 import 'dart:ui';
 // this dart:developer import is used to show log() if this is not imported then the math.dart log will be used ;
-import 'dart:developer';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
@@ -11,7 +9,6 @@ import 'package:responsive_sizer/responsive_sizer.dart';
 import 'package:we_chat_app/Helper/dialogs.dart';
 import 'package:we_chat_app/Home/home.dart';
 import 'package:we_chat_app/api/apis.dart';
-import 'package:we_chat_app/custom_widgets/Custom_Rich_Text.dart';
 import 'package:we_chat_app/utils/imageString.dart';
 
 class Login extends StatefulWidget {

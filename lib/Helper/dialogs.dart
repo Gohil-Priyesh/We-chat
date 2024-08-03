@@ -12,4 +12,5 @@ class Dialogs{
     // if i don't wrap the CircularProgressIndicator with the center then the progressIndicator will be huge and take the entire screen
     showDialog(context: context, builder: (_)=>Center(child: CircularProgressIndicator()));
   }
+
 }
