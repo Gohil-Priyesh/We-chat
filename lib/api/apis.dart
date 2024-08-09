@@ -41,6 +41,15 @@ class APIs {
         MyApp.logger.i('Push_Toke: $t');
       }
     });
+    /// this below commented cod can be used for showing notification in foreground with the help of local notification in flutter
+    // FirebaseMessaging.onMessage.listen((RemoteMessage message) {
+    //   MyApp.logger.i('Got a message whilst in the foreground!');
+    //   MyApp.logger.i('Message data: ${message.data}');
+    //
+    //   if (message.notification != null) {
+    //     MyApp.logger.i('Message also contained a notification: ${message.notification}');
+    //   }
+    // });
   }
 
   /// for getting firebase Access token
@@ -89,8 +98,8 @@ class APIs {
           'token' : Chatuser.pushToke,
           'notification' : {
             'title' : Chatuser.name,
-            'body' : msg
-          }
+            'body' : msg,
+          },
         }
       };
       final http.Response response = await http.post(Uri.parse(endpointFirebaseCloudMessaging),

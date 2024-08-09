@@ -67,6 +67,7 @@ dependencies:
   #googleapis:
   googleapis:
   googleapis_auth:
+  flutter_notification_channel: ^3.1.0
 
 dev_dependencies:
   flutter_test:

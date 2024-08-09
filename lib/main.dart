@@ -1,11 +1,11 @@
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_notification_channel/flutter_notification_channel.dart';
+import 'package:flutter_notification_channel/notification_importance.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:logger/logger.dart';
 import 'package:responsive_sizer/responsive_sizer.dart';
-import 'package:we_chat_app/Home/auth/login.dart';
-import 'package:we_chat_app/Home/home.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:we_chat_app/Home/splashscreen.dart';
 import 'package:we_chat_app/logger_interceptor.dart';
@@ -97,8 +97,13 @@ _initializeFirebase() async {
   // Log Firebase initialization
   final logger = Logger();
   logger.i("Firebase initialized with options: ${DefaultFirebaseOptions.currentPlatform}");
+  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform,);
+  var result = await FlutterNotificationChannel().registerNotificationChannel(
+    description: 'For showing Message Notification',
+    id: 'chats',
+    importance: NotificationImportance.IMPORTANCE_HIGH,
+    name: 'Chats',
 
-  await Firebase.initializeApp(
-    options: DefaultFirebaseOptions.currentPlatform,
   );
+  MyApp.logger.i('Notification channel log $result');
 }

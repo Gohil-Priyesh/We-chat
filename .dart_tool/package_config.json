@@ -260,6 +260,12 @@
       "languageVersion": "3.1"
     },
     {
+      "name": "flutter_notification_channel",
+      "rootUri": "file:///C:/Users/priye/AppData/Local/Pub/Cache/hosted/pub.dev/flutter_notification_channel-3.1.0",
+      "packageUri": "lib/",
+      "languageVersion": "3.3"
+    },
+    {
       "name": "flutter_plugin_android_lifecycle",
       "rootUri": "file:///C:/Users/priye/AppData/Local/Pub/Cache/hosted/pub.dev/flutter_plugin_android_lifecycle-2.0.20",
       "packageUri": "lib/",
@@ -680,7 +686,7 @@
       "languageVersion": "3.4"
     }
   ],
-  "generated": "2024-08-07T10:49:19.890594Z",
+  "generated": "2024-08-09T08:34:56.901969Z",
   "generator": "pub",
   "generatorVersion": "3.4.4",
   "flutterRoot": "file:///D:/src/flutter",

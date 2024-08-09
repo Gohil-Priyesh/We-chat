@@ -85,6 +85,7 @@ MERGED from [:firebase_auth] D:\flutter\we_chat_app\build\firebase_auth\intermed
 MERGED from [:firebase_messaging] D:\flutter\we_chat_app\build\firebase_messaging\intermediates\merged_manifest\debug\AndroidManifest.xml:2:1-50:12
 MERGED from [:firebase_storage] D:\flutter\we_chat_app\build\firebase_storage\intermediates\merged_manifest\debug\AndroidManifest.xml:2:1-17:12
 MERGED from [:firebase_core] D:\flutter\we_chat_app\build\firebase_core\intermediates\merged_manifest\debug\AndroidManifest.xml:2:1-17:12
+MERGED from [:flutter_notification_channel] D:\flutter\we_chat_app\build\flutter_notification_channel\intermediates\merged_manifest\debug\AndroidManifest.xml:2:1-9:12
 MERGED from [:image_picker_android] D:\flutter\we_chat_app\build\image_picker_android\intermediates\merged_manifest\debug\AndroidManifest.xml:2:1-36:12
 MERGED from [:flutter_plugin_android_lifecycle] D:\flutter\we_chat_app\build\flutter_plugin_android_lifecycle\intermediates\merged_manifest\debug\AndroidManifest.xml:2:1-9:12
 MERGED from [:gallery_saver] D:\flutter\we_chat_app\build\gallery_saver\intermediates\merged_manifest\debug\AndroidManifest.xml:2:1-9:12
@@ -237,6 +238,8 @@ MERGED from [:firebase_storage] D:\flutter\we_chat_app\build\firebase_storage\in
 MERGED from [:firebase_storage] D:\flutter\we_chat_app\build\firebase_storage\intermediates\merged_manifest\debug\AndroidManifest.xml:5:5-7:41
 MERGED from [:firebase_core] D:\flutter\we_chat_app\build\firebase_core\intermediates\merged_manifest\debug\AndroidManifest.xml:5:5-7:41
 MERGED from [:firebase_core] D:\flutter\we_chat_app\build\firebase_core\intermediates\merged_manifest\debug\AndroidManifest.xml:5:5-7:41
+MERGED from [:flutter_notification_channel] D:\flutter\we_chat_app\build\flutter_notification_channel\intermediates\merged_manifest\debug\AndroidManifest.xml:5:5-7:41
+MERGED from [:flutter_notification_channel] D:\flutter\we_chat_app\build\flutter_notification_channel\intermediates\merged_manifest\debug\AndroidManifest.xml:5:5-7:41
 MERGED from [:image_picker_android] D:\flutter\we_chat_app\build\image_picker_android\intermediates\merged_manifest\debug\AndroidManifest.xml:6:5-8:41
 MERGED from [:image_picker_android] D:\flutter\we_chat_app\build\image_picker_android\intermediates\merged_manifest\debug\AndroidManifest.xml:6:5-8:41
 MERGED from [:flutter_plugin_android_lifecycle] D:\flutter\we_chat_app\build\flutter_plugin_android_lifecycle\intermediates\merged_manifest\debug\AndroidManifest.xml:5:5-7:41
