@@ -13,8 +13,8 @@ import 'firebase_options.dart';
 
 void main()async {
   SystemChrome.setSystemUIOverlayStyle(const SystemUiOverlayStyle(
-    systemNavigationBarColor: Colors.white, // navigation bar color
-    statusBarColor: Colors.white, // status bar color
+    systemNavigationBarColor: Colors.transparent, // navigation bar color
+    statusBarColor: Colors.transparent, // status bar color
   ));
   // the binding was not initialized correctly
   /// Ensure Flutter is initialized
@@ -51,6 +51,7 @@ class MyApp extends StatelessWidget {
     return ResponsiveSizer(
       builder: (p0, p1, p2) {
         return  MaterialApp(
+          themeMode: ThemeMode.light,
           debugShowCheckedModeBanner: false,
           theme: ThemeData(
 
