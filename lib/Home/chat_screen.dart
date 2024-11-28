@@ -10,6 +10,7 @@ import 'package:flutter/services.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:responsive_sizer/responsive_sizer.dart';
 import 'package:we_chat_app/Helper/my_date_util.dart';
+import 'package:we_chat_app/Home/home.dart';
 import 'package:we_chat_app/Home/view_profileScreen.dart';
 import 'package:we_chat_app/Models/message_model.dart';
 import 'package:we_chat_app/Models/users_model.dart';
@@ -27,6 +28,7 @@ class ChatScreen extends StatefulWidget {
 }
 
 class _ChatScreenState extends State<ChatScreen> {
+
   final _txtController = TextEditingController();
 
   /// this _list store all the data from the Message_model
@@ -61,101 +63,109 @@ class _ChatScreenState extends State<ChatScreen> {
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () => FocusScope.of(context).unfocus(),
-      child: SafeArea(
-        child: PopScope(
-          canPop: false,
-          onPopInvoked: _onWillPop,
-          child: Scaffold(
-            appBar: CustomAppbar(
-              automaticallyImplyLeading: false,
-              systemOverlayStyle:
-                  SystemUiOverlayStyle(statusBarColor: Colors.white),
-              flexibleSpace: appBar(),
+      child: PopScope(
+        canPop: false,
+        onPopInvoked: _onWillPop,
+        child: Scaffold(
+          appBar: CustomAppbar(
+            leading: IconButton(
+              icon: Icon(Icons.arrow_back),
+              onPressed: (){
+                /// for returning back to home screen
+                Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => Home(),));
+              },
             ),
-            backgroundColor: Color.fromARGB(255, 221, 245, 255),
-            body: Column(
-              children: [
-                Expanded(
-                  child: StreamBuilder(
+            automaticallyImplyLeading: false,
+            systemOverlayStyle:
+                const SystemUiOverlayStyle(statusBarColor: Colors.transparent),
+            /// without using the SingleChildScrollView it gives error in the real device
+            flexibleSpace: SingleChildScrollView(child: appBar()),
+          ),
+          backgroundColor: const Color.fromARGB(255, 221, 245, 255),
+          body: Column(
+            children: [
+              Expanded(
+                child: StreamBuilder(
 
-                      /// this switch case checks that is the streamBuilder is waiting for the data from the 'users' then show the progressIndicator
-                      /// then when the connection is active then the data will be stored in the list form the data variable which use snapshot.data.docs;
-                      stream: APIs.getallMessages(widget.user),
-                      builder: (context, snapshot) {
-                        switch (snapshot.connectionState) {
-                          case ConnectionState.waiting:
-                          case ConnectionState.none:
-                            return SizedBox();
-                          case ConnectionState.active:
-                          case ConnectionState.done:
+                    /// this switch case checks that is the streamBuilder is waiting for the data from the 'users' then show the progressIndicator
+                    /// then when the connection is active then the data will be stored in the list form the data variable which use snapshot.data.docs;
+                    stream: APIs.getallMessages(widget.user),
+                    builder: (context, snapshot) {
+                      switch (snapshot.connectionState) {
+                        case ConnectionState.waiting:
+                        case ConnectionState.none:
+                          return const SizedBox();
+                        case ConnectionState.active:
+                        case ConnectionState.done:
 
-                            /// if the connection is done then execute  the below code
-                            final data = snapshot.data?.docs;
-                            // if i don't use e.data then i will throw an error
-                            // the list will only get the instance of usersModel from this map. after getting the instance of the usersModel we set the data to the car widget in the ChatUserCard class
-                            _list = data
-                                    ?.map((e) => message_model.fromJson(e.data()))
-                                    .toList() ??
-                                [];
+                          /// if the connection is done then execute  the below code
+                          final data = snapshot.data?.docs;
+                          // if i don't use e.data then i will throw an error
+                          // the list will only get the instance of usersModel from this map. after getting the instance of the usersModel we set the data to the car widget in the ChatUserCard class
+                          _list = data
+                                  ?.map((e) => message_model.fromJson(e.data()))
+                                  .toList() ??
+                              [];
 
-                            /// if the list have the data then show the data with the help of card
-                            if (_list.isNotEmpty) {
-                              return ListView.builder(
-                                /// i make the reverse ture because the list is set to .orderBy('sent', descending: true) in Api.getallMessages
-                                /// function so the list which i get is upSide down so using the reverse: true make it inverted again
-                                reverse: true,
-                                /// this physics is use to make the list view bounce when the scrolling ends
-                                physics: BouncingScrollPhysics(),
-                                itemCount: _list.length,
-                                itemBuilder: (context, index) {
-                                  return MessageCard(
-                                    message: _list[index],
-                                  );
-                                },
-                              );
+                          /// if the list have the data then show the data with the help of card
+                          if (_list.isNotEmpty) {
+                            return ListView.builder(
+                              /// i make the reverse ture because the list is set to .orderBy('sent', descending: true) in Api.getallMessages
+                              /// function so the list which i get is upSide down so using the reverse: true make it inverted again
+                              reverse: true,
+                              /// this physics is use to make the list view bounce when the scrolling ends
+                              physics: const BouncingScrollPhysics(),
+                              itemCount: _list.length,
+                              itemBuilder: (context, index) {
+                                return MessageCard(
+                                  message: _list[index],
+                                );
+                              },
+                            );
 
-                              /// if the data is not present in the list then show the text message
-                            } else {
-                              return Center(
-                                  child: Text(
-                                'Say Hi!👋',
-                                style: TextStyle(fontSize: 25),
-                              ));
-                            }
-                        }
-                      }),
+                            /// if the data is not present in the list then show the text message
+                          } else {
+                            return const Center(
+                                child: Text(
+                              'Say Hi!👋',
+                              style: TextStyle(fontSize: 25),
+                            ));
+                          }
+                      }
+                    }),
+              ),
+                if(_isUploading)
+                Align(
+                  alignment: Alignment.centerRight,
+                    child: Padding(
+                      padding:  EdgeInsets.symmetric(vertical:1.h, horizontal:3.w),
+                      child: const CircularProgressIndicator(strokeWidth: 2,),
+                    )
                 ),
-                  if(_isUploading)
-                  Align(
-                    alignment: Alignment.centerRight,
-                      child: Padding(
-                        padding:  EdgeInsets.symmetric(vertical:1.h, horizontal:3.w),
-                        child: CircularProgressIndicator(strokeWidth: 2,),
-                      )
-                  ),
 
 
-                /// it is equal to his _chatInput(),
-                /// this is the text input field of my main chat screen
-                _MessageInputField(),
+              /// it is equal to his _chatInput(),
+              /// this is the text input field of my main chat screen
+              SafeArea(bottom: true,
+                  child: _MessageInputField()
+              ),
 
-                if (_showEmoji)
-                  SizedBox(
-                    height: 30.h,
+              if (_showEmoji)
+                SizedBox(
+                  height: 30.h,
 
-                    /// for using  Emoji
-                    child: EmojiPicker(
-                      textEditingController: _txtController,
-                      config: Config(
-                        bgColor: Color.fromARGB(255, 221, 245, 255),
-                        columns: 8,
-                        checkPlatformCompatibility: true,
-                        emojiSizeMax: 32 * (Platform.isIOS ? 1.30 : 1.0),
-                      ),
+                  /// for using  Emoji
+                  child: EmojiPicker(
+                    textEditingController: _txtController,
+                    config: Config(
+                      bgColor: const Color.fromARGB(255, 221, 245, 255),
+                      columns: 8,
+                      checkPlatformCompatibility: true,
+                      emojiSizeMax: 32 * (Platform.isIOS ? 1.30 : 1.0),
                     ),
-                  )
-              ],
-            ),
+                  ),
+                )
+            ],
           ),
         ),
       ),
@@ -186,53 +196,56 @@ class _ChatScreenState extends State<ChatScreen> {
                 )),*/
             // for showing user image
             Padding(
-              padding: EdgeInsets.only(top: .5.sh, bottom: .5, left: 12.sw),
+              padding: EdgeInsets.only(top: 4.9.h, bottom: .5.h, left: 12.w),
               child: ClipRRect(
                 borderRadius: BorderRadius.circular(8.h),
                 /// this CachedNetworkImage is use to show image in our app i have imported an package for this.
                 child: CachedNetworkImage(
                   // the BoxFit.fill is sued to make the image fit whit the given height and weight parameter if not use then it will not make the image circular as easily.
                   fit: BoxFit.fill,
-                  height: 5.sh,
-                  width: 10.5.sw,
+                  height: 4.9.h,
+                  width: 10.9.w,
                   imageUrl: list.isNotEmpty ? list[0].image.toString() : widget.user.image.toString(),
-                  // placeholder: (context, url) => CircularProgressIndicator(),
-                  errorWidget: (context, url, error) => CircleAvatar(
+                   placeholder: (context, url) => const CircularProgressIndicator(),
+                  errorWidget: (context, url, error) => const CircleAvatar(
                     child: Icon(CupertinoIcons.person),
                   ),
                 ),
               ),
             ),
             SizedBox(
-              width: 1.5.sh,
+              width: 1.5.h,
             ),
-            Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                // for showing user name
-                Text(
-                  list.isNotEmpty ? list[0].name.toString() :
-                  widget.user.name.toString(),
-                  style: TextStyle(
-                      fontWeight: FontWeight.w500,
-                      fontSize: 16,
-                      color: Colors.black87),
-                ),
-                SizedBox(
-                  height: .25.sh,
-                ),
-                // for showing user about
-                Text(list.isNotEmpty ?
-                    list[0].isOnline! ? 'online':
-                MyDateUtil.getLastActiveTime(context: context, lastActive: list[0].lastActive.toString()) :
-                MyDateUtil.getLastActiveTime(context: context, lastActive:  widget.user.lastActive.toString()),
-                  style: TextStyle(
-                      fontWeight: FontWeight.w400,
-                      fontSize: 13,
-                      color: Colors.black87),
-                )
-              ],
+            Padding(
+              padding:  EdgeInsets.only(top: 4.9.h, bottom: .6.h,),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  // for showing user name
+                  Text(
+                    list.isNotEmpty ? list[0].name.toString() :
+                    widget.user.name.toString(),
+                    style: const TextStyle(
+                        fontWeight: FontWeight.w500,
+                        fontSize: 16,
+                        color: Colors.black87),
+                  ),
+                  SizedBox(
+                    height: .25.h,
+                  ),
+                  // for showing user about
+                  Text(list.isNotEmpty ?
+                      list[0].isOnline! ? 'online':
+                  MyDateUtil.getLastActiveTime(context: context, lastActive: list[0].lastActive.toString()) :
+                  MyDateUtil.getLastActiveTime(context: context, lastActive:  widget.user.lastActive.toString()),
+                    style: const TextStyle(
+                        fontWeight: FontWeight.w400,
+                        fontSize: 13,
+                        color: Colors.black87),
+                  )
+                ],
+              ),
             )
           ],
         );
@@ -244,7 +257,7 @@ class _ChatScreenState extends State<ChatScreen> {
   /// text input field for my chat screen
   Widget _MessageInputField() {
     return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 3, horizontal: .5),
+      padding:  EdgeInsets.only(/*bottom: 5.5.h,*/ left: 1.5.w),
       child: Row(children: [
         Expanded(
           child: Card(
@@ -270,7 +283,7 @@ class _ChatScreenState extends State<ChatScreen> {
                    if(_showEmoji)setState(()=> _showEmoji = !_showEmoji);
                   },
                   maxLines: null,
-                  decoration: InputDecoration(
+                  decoration: const InputDecoration(
 
                       /// this makes the text field borderless
                       border: InputBorder.none,
@@ -326,7 +339,7 @@ class _ChatScreenState extends State<ChatScreen> {
           height: 5.sh,
           color: Colors.greenAccent,
           minWidth: 0,
-          shape: CircleBorder(),
+          shape: const CircleBorder(),
           child: Icon(
             Icons.send,
             color: Colors.white,

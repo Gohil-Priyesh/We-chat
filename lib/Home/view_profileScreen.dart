@@ -30,100 +30,96 @@ class ViewProfileScreen extends StatefulWidget {
 class _ViewProfileScreenState extends State<ViewProfileScreen> {
   @override
   Widget build(BuildContext context) {
-    return SafeArea(
-      bottom: true,
-      // by using this GestureDetector i can hide the keyboard when user tap anywhere on the screen
-      child: GestureDetector(
-        onTap: () => FocusScope.of(context).unfocus(),
-        child: Scaffold(
-          // when i make resizeToAvoidBottomInset: property to true the bottomNavigation button cums up with the keyboard
-          // when i set it to false it stays at its original position and gets overlapped by the keyboard
-          resizeToAvoidBottomInset: false,
-          appBar: CustomAppbar(
-            title: Text(widget.user.name.toString()),
-          ),
+    return GestureDetector(
+      onTap: () => FocusScope.of(context).unfocus(),
+      child: Scaffold(
+        // when i make resizeToAvoidBottomInset: property to true the bottomNavigation button cums up with the keyboard
+        // when i set it to false it stays at its original position and gets overlapped by the keyboard
+        resizeToAvoidBottomInset: false,
+        appBar: CustomAppbar(
+          title: Text(widget.user.name.toString()),
+        ),
 
-          /// for showing Joined date
-          floatingActionButton: Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Text(
-                'Joined on: ',
-                style: TextStyle(
-                    color: Colors.black87,
-                    fontSize: 17,
-                    fontWeight: FontWeight.w500),
-              ),
-              SizedBox(
-                height: 5.sh,
-              ),
-              Text(
-                MyDateUtil.getLastMessageTime(
-                    context: context,
-                    time: widget.user.createdAt.toString(),
-                    showYear: true),
-                style: TextStyle(color: Colors.black54, fontSize: 16),
-              ),
-            ],
-          ),
-          body: Padding(
-            padding: EdgeInsets.all(2.w),
-            child: SingleChildScrollView(
-              child: Center(
-                child: Column(
-                  children: [
-                    Padding(
-                      padding: EdgeInsets.only(
-                        top: 10.sh,
-                      ),
-                      child: ClipRRect(
-                        borderRadius: BorderRadius.circular(22.sh),
-                        child: CachedNetworkImage(
-                          fit: BoxFit.cover,
-                          height: 22.sh,
-                          width: 46.sw,
-                          imageUrl: widget.user.image.toString(),
-                          // placeholder: (context, url) => CircularProgressIndicator(),
-                          errorWidget: (context, url, error) => CircleAvatar(
-                            child: Icon(CupertinoIcons.person),
-                          ),
+        /// for showing Joined date
+        floatingActionButton: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Text(
+              'Joined on: ',
+              style: TextStyle(
+                  color: Colors.black87,
+                  fontSize: 17,
+                  fontWeight: FontWeight.w500),
+            ),
+            SizedBox(
+              height: 5.h,
+            ),
+            Text(
+              MyDateUtil.getLastMessageTime(
+                  context: context,
+                  time: widget.user.createdAt.toString(),
+                  showYear: true),
+              style: TextStyle(color: Colors.black54, fontSize: 16),
+            ),
+          ],
+        ),
+        body: Padding(
+          padding: EdgeInsets.all(2.w),
+          child: SingleChildScrollView(
+            child: Center(
+              child: Column(
+                children: [
+                  Padding(
+                    padding: EdgeInsets.only(
+                      top: 10.h,
+                    ),
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.circular(22.h),
+                      child: CachedNetworkImage(
+                        fit: BoxFit.cover,
+                        height: 21.h,
+                        width: 46.w,
+                        imageUrl: widget.user.image.toString(),
+                         placeholder: (context, url) => CircularProgressIndicator(),
+                        errorWidget: (context, url, error) => CircleAvatar(
+                          child: Icon(CupertinoIcons.person),
                         ),
                       ),
                     ),
-                    SizedBox(
-                      height: 2.sh,
-                    ),
-                    Text(
-                      widget.user.email.toString(),
-                      style: TextStyle(
-                          color: Colors.black87,
-                          fontSize: 18,
-                          fontWeight: FontWeight.w400),
-                    ),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Text(
-                          'About: ',
-                          style: TextStyle(
-                              color: Colors.black87,
-                              fontSize: 17,
-                              fontWeight: FontWeight.w500),
-                        ),
-                        SizedBox(
-                          height: 5.sh,
-                        ),
-                        Text(
-                          widget.user.about.toString(),
-                          style: TextStyle(color: Colors.black54, fontSize: 16),
-                        ),
-                      ],
-                    ),
-                    SizedBox(
-                      height: 2.sh,
-                    ),
-                  ],
-                ),
+                  ),
+                  SizedBox(
+                    height: 2.h,
+                  ),
+                  Text(
+                    widget.user.email.toString(),
+                    style: TextStyle(
+                        color: Colors.black87,
+                        fontSize: 18,
+                        fontWeight: FontWeight.w400),
+                  ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text(
+                        'About: ',
+                        style: TextStyle(
+                            color: Colors.black87,
+                            fontSize: 17,
+                            fontWeight: FontWeight.w500),
+                      ),
+                      SizedBox(
+                        height: 5.h,
+                      ),
+                      Text(
+                        widget.user.about.toString(),
+                        style: TextStyle(color: Colors.black54, fontSize: 16),
+                      ),
+                    ],
+                  ),
+                  SizedBox(
+                    height: 2.h,
+                  ),
+                ],
               ),
             ),
           ),

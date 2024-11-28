@@ -291,7 +291,6 @@ layout notification_template_media
 layout notification_template_media_custom
 layout notification_template_part_chronometer
 layout notification_template_part_time
-mipmap ic_launcher
 mipmap launcher_icon
 raw firebase_common_keep
 string android_credentials_TYPE_PASSWORD_CREDENTIAL

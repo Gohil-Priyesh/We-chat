@@ -64,11 +64,11 @@ class _ChatUserCardState extends State<ChatUserCard> {
                     borderRadius: BorderRadius.circular(8.h),
                     child: CachedNetworkImage(
                       // the BoxFit.fill,cover is ued to make the image fit whit the given height and weight parameter if not use then it will not make the image circular as easily.
-                      fit: BoxFit.fill,
-                      height: 16.h,
-                      width: 14.w,
+                      fit: BoxFit.cover,
+                      height: 15.h,
+                      width: 14.9.w,
                       imageUrl: widget.user.image.toString(),
-                      // placeholder: (context, url) => CircularProgressIndicator(),
+                       placeholder: (context, url) => CircularProgressIndicator(),
                       errorWidget: (context, url, error) => CircleAvatar(
                         child: Icon(CupertinoIcons.person),
                       ),

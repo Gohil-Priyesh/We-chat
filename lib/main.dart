@@ -4,28 +4,31 @@ import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:logger/logger.dart';
 import 'package:responsive_sizer/responsive_sizer.dart';
-import 'package:we_chat_app/Home/auth/login.dart';
-import 'package:we_chat_app/Home/home.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:we_chat_app/Home/splashscreen.dart';
 import 'package:we_chat_app/logger_interceptor.dart';
 import 'firebase_options.dart';
 
 void main()async {
-  SystemChrome.setSystemUIOverlayStyle(const SystemUiOverlayStyle(
-    systemNavigationBarColor: Colors.white, // navigation bar color
-    statusBarColor: Colors.white, // status bar color
-  ));
+
   // the binding was not initialized correctly
   /// Ensure Flutter is initialized
   WidgetsFlutterBinding.ensureInitialized();
   SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersiveSticky);
+
+  SystemChrome.setSystemUIOverlayStyle(const SystemUiOverlayStyle(
+    statusBarColor: Colors.transparent, // status bar color
+    statusBarIconBrightness: Brightness.dark,
+    systemNavigationBarColor: Colors.transparent
+
+  )
+  );
   /// for setting orientations to portrait only.
   SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp,DeviceOrientation.portraitDown]).then((value){
     _initializeFirebase();
     runApp(const MyApp());
   });
-  
+
   await Firebase.initializeApp(); // Initialize Firebase
 
 
@@ -42,10 +45,20 @@ void main()async {
 
 
 }
-class MyApp extends StatelessWidget {
+class MyApp extends StatefulWidget {
   static final logger = Logger();
   const MyApp({super.key});
 
+  @override
+  State<MyApp> createState() => _MyAppState();
+}
+
+class _MyAppState extends State<MyApp> {
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+  }
   @override
   Widget build(BuildContext context) {
     return ResponsiveSizer(
@@ -96,8 +109,5 @@ _initializeFirebase() async {
   // Log Firebase initialization
   final logger = Logger();
   logger.i("Firebase initialized with options: ${DefaultFirebaseOptions.currentPlatform}");
-
-  await Firebase.initializeApp(
-    options: DefaultFirebaseOptions.currentPlatform,
-  );
+  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform,);
 }

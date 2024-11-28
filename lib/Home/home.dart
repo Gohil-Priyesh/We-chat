@@ -1,4 +1,3 @@
-import 'dart:convert';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -29,8 +28,12 @@ class _HomeState extends State<Home> {
     // TODO: implement initState
     super.initState();
     APIs.getSelfInfo();
-    /// for setting user status to active
+    /*Future.delayed(Duration(seconds: 10),(){
+      APIs.forCheckingIfUserIsLoggedIn(context);
+    });*/
+    /// used for reflecting the changes of user status
     APIs.updateActiveStatus(true);
+
     /// for updating user active status according to lifecycle events
     /// resume -> active or online
     /// pause ->  inactive or offline
@@ -111,153 +114,158 @@ class _HomeState extends State<Home> {
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: () => FocusScope.of(context).unfocus(),
+      onTap: () {
+        FocusScope.of(context).unfocus();
+      },
       child: PopScope(
         canPop: false,
         onPopInvoked: _onWillPop,
         child: Scaffold(
-          resizeToAvoidBottomInset: false,
-          appBar: CustomAppbar(
-            backgroundColor: Colors.white,
-            centerTitle: true,
-            elevation: 3,
-            shadowColor: Colors.black54,
-            leading: Icon(CupertinoIcons.home),
-            actions: [
-              // if the searching is on then it uses the clear_circled icon and if the searching process is not happening then it will show the search icon
-              // this can be achieved with the help of Ternary operator
-              IconButton(
-                  onPressed: () {
-                    setState(() {
-                      // this statement makes the condition of the _isSearching opposite of whatever it is lets say if ture then it make it to false and visa versa
-                      _isSearching = !_isSearching;
-                    });
-                  },
-                  icon: Icon(_isSearching
-                      ? CupertinoIcons.clear_circled
-                      : Icons.search)),
-              IconButton(
-                  onPressed: () {
-                    // i am passing the list because the list has all the data of the user
-                    Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => Profilescreen(
-                            user: APIs.me,
-                          ),
-                        ));
-                  },
-                  icon: Icon(Icons.more_vert))
-            ],
-            // this textField is used for searching the users
-            title: _isSearching
-                ? TextField(
-                    style: TextStyle(fontSize: 17, letterSpacing: 1),
-                    autofocus: true,
-                    decoration: InputDecoration(
-                      border: InputBorder.none,
-                      hintText: 'Name , Email...',
-                    ),
-                    onChanged: (val) {
-                      _SearchList.clear();
-                      for (var i in _list) {
-                        if (i.name!.toLowerCase().contains(val.toLowerCase()) ||
-                            i.email!
-                                .toLowerCase()
-                                .contains(val.toLowerCase())) {
-                          _SearchList.add(i);
-                          setState(() {});
-                        }
+            resizeToAvoidBottomInset: false,
+            appBar: CustomAppbar(
+              backgroundColor: Colors.white,
+              centerTitle: true,
+              elevation: 3,
+              shadowColor: Colors.black54,
+              leading: Icon(CupertinoIcons.home),
+              actions: [
+                // if the searching is on then it uses the clear_circled icon and if the searching process is not happening then it will show the search icon
+                // this can be achieved with the help of Ternary operator
+                IconButton(
+                    onPressed: () {
+                      setState(() {
+                        // this statement makes the condition of the _isSearching opposite of whatever it is lets say if ture then it make it to false and visa versa
+                        _isSearching = !_isSearching;
+                      });
+                    },
+                    icon: Icon(_isSearching
+                        ? CupertinoIcons.clear_circled
+                        : Icons.search
+                    )
+                ),
+                IconButton(
+                    onPressed: () {
+                      ///i am passing the list because the list has all the data of the user
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => Profilescreen(
+                              user: APIs.me,
+                            ),
+                          )
+                      );
+                    },
+                    icon: Icon(Icons.more_vert))
+              ],
+              /// this textField is used for searching the users
+              title: _isSearching
+                  ? TextField(
+                  style: TextStyle(fontSize: 16.5.sp, letterSpacing: 3.sp),
+                  autofocus: true,
+                  decoration: InputDecoration(
+                    border: InputBorder.none,
+                    hintText: 'Name , Email...',
+                  ),
+                  onChanged: (val) {
+                    _SearchList.clear();
+                    for (var i in _list) {
+                      if (i.name!.toLowerCase().contains(val.toLowerCase()) ||
+                          i.email!
+                              .toLowerCase()
+                              .contains(val.toLowerCase())) {
+                        _SearchList.add(i);
+                        setState(() {});
                       }
-                    })
-                : Text(title),
-          ),
-          // floating Action Button for search
-          floatingActionButton: Padding(
-            padding: EdgeInsets.only(bottom: 10),
-
-            /// floatingActionButton
-            child: FloatingActionButton(
-              onPressed: () async {
-                _addChatUserDialog();
-              },
-              child: Icon(Icons.add_comment_rounded),
-            ),
-          ),
-          // I Cannot use the ListView inside the Colum
-            /// get id of only known users
-          body: StreamBuilder(
-            stream: APIs.getMyUsersId(),
-            builder: (context, snapshot) {
-              switch (snapshot.connectionState) {
-                case ConnectionState.waiting:
-                case ConnectionState.none:
-                  // return Center(child: CircularProgressIndicator());
-                case ConnectionState.active:
-                case ConnectionState.done:
-
-                final userIds = snapshot.data?.docs.map((e) => e.id).toList() ?? [];
-                if (userIds.isEmpty) {
-                  return Center(
-                    child: Text(
-                      'No connections found!',
-                      style: TextStyle(fontSize: 25),
-                    ),
-                  );
-                }
-
-              /// get only those users who's id's are provided
-             return StreamBuilder(
-
-                // this switch case checks that is the streamBuilder is waiting for the data from the 'users' then show the progressIndicator
-                // then when the connection is active then the data will be stored in the list form the data variable which use snapshot.data.docs;
-                  stream: APIs.getallUsers(userIds),
-
-                  builder: (context, snapshot) {
-                    switch (snapshot.connectionState) {
-                      case ConnectionState.waiting:
-                      case ConnectionState.none:
-                        // return Center(child: CircularProgressIndicator());
-                      case ConnectionState.active:
-                      case ConnectionState.done:
-                      // if the connection is done then execute  the below code
-                        final data = snapshot.data?.docs;
-                        // if i don't use e.data then i will throw an error
-                        // the list will only get the instance of usersModel from this map. after getting the instance of the usersModel we set the data to the car widget in the ChatUserCard class
-                        _list = data
-                            ?.map((e) => usersModel.fromJson(e.data()))
-                            .toList() ??
-                            [];
-
-                        // if the list have the data then show the data with the help of card
-                        if (_list.isNotEmpty) {
-                          return ListView.builder(
-                            // this physics is use to make the list view bounce when the scrolling ends
-                            physics: BouncingScrollPhysics(),
-                            itemCount:
-                            _isSearching ? _SearchList.length : _list.length,
-                            itemBuilder: (context, index) {
-                              return ChatUserCard(
-                                user: _isSearching
-                                    ? _SearchList[index]
-                                    : _list[index],
-                              );
-                              // return Text('Name: ${_list[index]}');
-                            },
-                          );
-                          // if the data is not present in the list then show the text message
-                        } else {
-                          return Center(
-                              child: Text(
-                                'No connections found!',
-                                style: TextStyle(fontSize: 25),
-                              ));
-                        }
                     }
-                  }
-              );
-            }
-          },)
+                  })
+                  : Text(title),
+            ),
+            // floating Action Button for search
+            floatingActionButton: Padding(
+              padding: EdgeInsets.only(bottom: 10),
+
+              /// floatingActionButton
+              child: FloatingActionButton(
+                onPressed: () async {
+                  _addChatUserDialog();
+                },
+                child: Icon(Icons.add_comment_rounded),
+              ),
+            ),
+            // I Cannot use the ListView inside the Colum
+            /// get id of only known users
+            body: StreamBuilder(
+              stream: APIs.getMyUsersId(),
+              builder: (context, snapshot) {
+                switch (snapshot.connectionState) {
+                  case ConnectionState.waiting:
+                  case ConnectionState.none:
+                  // return Center(child: CircularProgressIndicator());
+                  case ConnectionState.active:
+                  case ConnectionState.done:
+
+                    final userIds = snapshot.data?.docs.map((e) => e.id).toList() ?? [];
+                    if (userIds.isEmpty) {
+                      return Center(
+                        child: Text(
+                          'No connections found!',
+                          style: TextStyle(fontSize: 25),
+                        ),
+                      );
+                    }
+
+                    /// get only those users who's id's are provided
+                    return StreamBuilder(
+
+                      // this switch case checks that is the streamBuilder is waiting for the data from the 'users' then show the progressIndicator
+                      // then when the connection is active then the data will be stored in the list form the data variable which use snapshot.data.docs;
+                        stream: APIs.getallUsers(userIds),
+
+                        builder: (context, snapshot) {
+                          switch (snapshot.connectionState) {
+                            case ConnectionState.waiting:
+                            case ConnectionState.none:
+                            // return Center(child: CircularProgressIndicator());
+                            case ConnectionState.active:
+                            case ConnectionState.done:
+                            // if the connection is done then execute  the below code
+                              final data = snapshot.data?.docs;
+                              // if i don't use e.data then i will throw an error
+                              // the list will only get the instance of usersModel from this map. after getting the instance of the usersModel we set the data to the car widget in the ChatUserCard class
+                              _list = data
+                                  ?.map((e) => usersModel.fromJson(e.data()))
+                                  .toList() ??
+                                  [];
+
+                              // if the list have the data then show the data with the help of card
+                              if (_list.isNotEmpty) {
+                                return ListView.builder(
+                                  // this physics is use to make the list view bounce when the scrolling ends
+                                  physics: BouncingScrollPhysics(),
+                                  itemCount:
+                                  _isSearching ? _SearchList.length : _list.length,
+                                  itemBuilder: (context, index) {
+                                    return ChatUserCard(
+                                      user: _isSearching
+                                          ? _SearchList[index]
+                                          : _list[index],
+                                    );
+                                    // return Text('Name: ${_list[index]}');
+                                  },
+                                );
+                                // if the data is not present in the list then show the text message
+                              } else {
+                                return Center(
+                                    child: Text(
+                                      'No connections found!',
+                                      style: TextStyle(fontSize: 25),
+                                    ));
+                              }
+                          }
+                        }
+                    );
+                }
+              },)
         ),
       ),
     );
@@ -280,7 +288,7 @@ class _HomeState extends State<Home> {
         // this onChange is used to change the msg value to a new value. given by the user
         onChanged: (value) => email= value,
         decoration: InputDecoration(
-          prefixIcon: Icon(Icons.email,color: Colors.lightBlueAccent,),
+            prefixIcon: Icon(Icons.email,color: Colors.lightBlueAccent,),
             hintText: 'Email Id',
             border: OutlineInputBorder(borderRadius: BorderRadius.circular(3.w))),
       ),

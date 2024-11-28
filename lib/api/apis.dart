@@ -1,14 +1,20 @@
+import 'dart:convert';
 import 'dart:io';
-
+import 'package:flutter/material.dart';
+import 'package:googleapis_auth/auth_io.dart' as autIo;
+import 'package:http/http.dart' as http;
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:firebase_storage/firebase_storage.dart';
-import 'package:logger/logger.dart';
+import 'package:we_chat_app/Home/auth/login.dart';
+import 'package:we_chat_app/Home/home.dart';
 import 'package:we_chat_app/Models/message_model.dart';
 import 'package:we_chat_app/Models/users_model.dart';
 import 'package:we_chat_app/main.dart';
-import 'package:we_chat_app/widgets/chat_user_card.dart';
+// import 'package:googleapis/servicecontrol/v1.dart' as servicecontrol;
+
+
 
 class APIs {
   // for authentication
@@ -28,7 +34,6 @@ class APIs {
   /// for firebase messaging (push Notification)
   static FirebaseMessaging fmessaging = FirebaseMessaging.instance;
 
-  /// for getting firebase message token
   static Future<void> getFirebaseMessagingToken() async {
     await fmessaging.requestPermission();
 
@@ -36,10 +41,84 @@ class APIs {
     await fmessaging.getToken().then((t) {
       if (t != null) {
         me.pushToke = t;
-        MyApp.logger.i('Push_Toke: $t}');
+        MyApp.logger.i('Push_Toke: $t');
       }
     });
+    /// this below commented cod can be used for showing notification in foreground with the help of local notification in flutter
+    // FirebaseMessaging.onMessage.listen((RemoteMessage message) {
+    //   MyApp.logger.i('Got a message whilst in the foreground!');
+    //   MyApp.logger.i('Message data: ${message.data}');
+    //
+    //   if (message.notification != null) {
+    //     MyApp.logger.i('Message also contained a notification: ${message.notification}');
+    //   }
+    // });
   }
+
+  /// for getting firebase Access token
+  static Future<String>getAccessToken() async {
+
+    final serviceAccountJson = {
+      "type": "service_account",
+      "project_id": "we-chat-2d974",
+      "private_key_id": "bffb978e4304b1ab1062c36dd91be16d5c56fef8",
+      "private_key": "-----BEGIN PRIVATE KEY-----\nMIIEugIBADANBgkqhkiG9w0BAQEFAASCBKQwggSgAgEAAoIBAQC+jgYBS+rhZayc\n18dLO4a2LZCyW0nBv2ijLSATchQ4gzZuzNAW75p58dVfbUNvNDOca8rnn9nmyX7v\neEViPT8TOyVwr+8MjoCWt9qkvbwHgB1SnJG4KyaALYt86JexOBUBhQ2Bcm0RonID\nksU+WzQ+FXy1a4y7cmrtCZhysBt5WOdBJDmmddM/5O40KfcJwg4s3Mt4jqObcRH2\nJI5hjdnT8quXUtWbP7NEfC+gK3rfM9ptNrmhl8X2XU/n7EbZOnxreslg+iaJxYJO\nW8ykavQfhGSpwNb4tjRANUWmo+pEyOlacx19BxoVXMNzYGVR03zEP56TwNEfJoKd\n0OOyTFzxAgMBAAECgf902KyLVFIjBIW5Z1dS+p1lo2sm8x4MgE1Zl0Ij/8AGfJnU\nN3h3l//RkZ6VdW/0W2jfx06/Lst0iU9yPah4z7WYb/GgDUHjIT7DLNoVoC1nLALP\nCtMQFjr1k6KvurB0gJSLlLBDauHBU9XgpbntaApmR3wWgxc472BBxFsxeGu1wY4D\nlbjUIr4YLd0tAnbPZDr2Iawv7girsCiusKyrVdwnhDnp3mlfMiUUUsZM5jI8wC8C\n6nfsDoLTRaTkBv81YW6Flg5VmukeYldmDhrHXamPvsCY0wb3OHwxZzmHm30IWodq\nVaHWTEomldLe0l7HeH8tiVyeeN8mizr8ZEZ/ggECgYEA8+AZIY6YZ0N/tOxh7uWk\ndjk+4q2patAj9RwUwnRdd963AHrBxatdC4gN9lEp+4a3BMihsct8zgi4rzCALNVI\nxHEoEHVYcfwDjH63A3dp5jPxGjt/vNPUId09/itGQZCXIyz7Ecla288VUHG+My3W\nuQvYpRxZW55liqwe4H+wxgECgYEAyAdKySQXEBUe7gZh2GUJ/frXRyoPxX1f8Nye\nP5ojdV/PPun+PI+p0ngXWcGxbKQIOeH7bfT7Pj6nKGsKB5/IUAEWxA7N+4kqf2xm\n+vthkiHzMwqvYreFkhpOWtre+LClmHwJlYeNL/yfNr1PlZ++wI5jlIuePdJuVQU8\nTjCd9vECgYBQayZ+XVI+QxDarVRB/fH0lj35a8DBGy+wRPlHgi3MOGHqQ5CgSTje\nc5f/EJaifbLeXfaL9YkLO+8CviCWKCLdvF60xq1KsQrOin55IyiFo70upE4kC0oZ\nfKZTqRt6xV5BWDTWkapnb2sc4tUQdV4oGRLwp1+ECcB8MPPhndnCAQKBgEI479Bx\nq1T+uROydzhOEyXLovQDf98xJ881KwsBe9XDF3jLvQjNwzpT2d80WgoOsE6Be10m\n6vrrgSnHbjWh945NHf1grV8mRTSUbe+Pw/i+VqbCVdhHy+fX37MCnSkWSmyWPBIO\nI3cMmqVjvXJaxas4OM2X/5aWEUMCjbmRLOrxAoGAanampyL4YoHRRNFWAqZppeN7\nKV6IWXaSsm1HCfu5b3mx4VFZi4aECSVbpo3GgG3EmdMs7XcjhkZJItEJjJKFWZ7v\nnpjhAUn6uG07imNhOa/ZsJK1NS8ZWE1fc6D0zMS461ydQ8kxjx8cQc9B1I6zcOKz\nOB6xY/xQn1AwXgQmTE0=\n-----END PRIVATE KEY-----\n",
+      "client_email": "we-chat-push-notification@we-chat-2d974.iam.gserviceaccount.com",
+      "client_id": "104491869017286974272",
+      "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+      "token_uri": "https://oauth2.googleapis.com/token",
+      "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
+      "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/we-chat-push-notification%40we-chat-2d974.iam.gserviceaccount.com",
+      "universe_domain": "googleapis.com"
+    };
+    List<String> scopes = [
+      "https://www.googleapis.com/auth/firebase.messaging"
+    ];
+
+    http.Client client  = await autIo.clientViaServiceAccount(
+      autIo.ServiceAccountCredentials.fromJson(serviceAccountJson),
+      scopes,
+    );
+    autIo.AccessCredentials credentials = await autIo.obtainAccessCredentialsViaServiceAccount(
+        autIo.ServiceAccountCredentials.fromJson(serviceAccountJson),
+        scopes,
+        client
+    );
+    client.close();
+
+    MyApp.logger.i("getAccessToken called ${credentials.accessToken.data}");
+
+    return credentials.accessToken.data;
+  }
+
+  static Future<void> sendPushNotification(usersModel Chatuser, String msg)async{
+
+    String endpointFirebaseCloudMessaging ="https://fcm.googleapis.com/v1/projects/we-chat-2d974/messages:send";
+    final String serverAccessTokenKey = await getAccessToken();
+    /// this json should always be passed in this format for notification;
+    final Map<String,dynamic> message = {
+      'message':{
+        'token' : Chatuser.pushToke,
+        'notification' : {
+          'title' : Chatuser.name,
+          'body' : msg,
+        },
+      }
+    };
+    final http.Response response = await http.post(Uri.parse(endpointFirebaseCloudMessaging),
+      headers: <String, String>{
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer $serverAccessTokenKey'
+      },
+      body: jsonEncode(message),
+    );
+    if(response.statusCode == 200){
+      MyApp.logger.i("Notification sent successfully");
+    }else{
+      MyApp.logger.e("Failed to send Notification ${response.statusCode}");
+    }
+  }
+
 
   // for storing getSelfInfo user info
   // this is an object not a variable
@@ -141,7 +220,7 @@ class APIs {
     return firestore
         .collection('users')
         .where('id', whereIn: userIds)
-        /* .where('id', isNotEqualTo: user.uid)*/
+    /* .where('id', isNotEqualTo: user.uid)*/
         .snapshots();
   }
 
@@ -220,7 +299,7 @@ class APIs {
       usersModel user) {
     return firestore
         .collection('chats/${getConversitionId(user.id.toString())}/messages/')
-        // this is use to show the last chat message first.
+    // this is use to show the last chat message first.
         .orderBy('sent', descending: true)
         .snapshots();
   }
@@ -244,7 +323,9 @@ class APIs {
 
     /// the time in the doc is very important for creating the docID => .doc(time)
     /// if i don't pass the time for as a parameter then it will create its own docID
-    await ref.doc(time).set(message.toJson());
+    await ref.doc(time).set(message.toJson()).then((value){
+      sendPushNotification(Chatuser,type == Type.text ? msg : "image");
+    });
   }
 
   /// update read status of message
@@ -261,7 +342,7 @@ class APIs {
     return firestore
         .collection('chats/${getConversitionId(user.id.toString())}/messages/')
 
-        /// for showing the last message in the subtitle in our listTile
+    /// for showing the last message in the subtitle in our listTile
         .orderBy('sent', descending: true)
         .limit(1)
         .snapshots();
@@ -316,7 +397,7 @@ class APIs {
   static Future<void> deleteMessage(message_model message) async {
     await firestore
         .collection(
-            'chats/${getConversitionId(message.told.toString())}/messages/')
+        'chats/${getConversitionId(message.told.toString())}/messages/')
         .doc(message.sent)
         .delete();
     if (message.type == Type.image) {
@@ -328,8 +409,17 @@ class APIs {
       message_model message, String updatedMsg) async {
     await firestore
         .collection(
-            'chats/${getConversitionId(message.told.toString())}/messages/')
+        'chats/${getConversitionId(message.told.toString())}/messages/')
         .doc(message.sent)
         .update({'msg': updatedMsg});
+  }
+
+ static Future forCheckingIfUserIsLoggedIn (BuildContext context)async{
+    /// for checking if the user is logged in then move to the home screen or else show the login screen.
+    if(FirebaseAuth.instance.currentUser != null ){
+      Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => Home(),));
+    }else{
+      Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => Login(),));
+    }
   }
 }

@@ -290,8 +290,7 @@ int layout notification_template_media 0x7f090010
 int layout notification_template_media_custom 0x7f090011
 int layout notification_template_part_chronometer 0x7f090012
 int layout notification_template_part_time 0x7f090013
-int mipmap ic_launcher 0x7f0a0000
-int mipmap launcher_icon 0x7f0a0001
+int mipmap launcher_icon 0x7f0a0000
 int raw firebase_common_keep 0x7f0b0000
 int string android_credentials_TYPE_PASSWORD_CREDENTIAL 0x7f0c0000
 int string androidx_credentials_TYPE_PUBLIC_KEY_CREDENTIAL 0x7f0c0001
